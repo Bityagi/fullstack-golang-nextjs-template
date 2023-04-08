@@ -1,0 +1,15 @@
+get:
+  summary: Detail
+  operationId: showPerson
+  description: Info for a specific person
+  tags:
+    - person
+  responses:
+    '200':
+      description: Expected response to a valid request
+      content:
+        application/json:
+          schema:
+            $ref: "../schemas/Person.yaml"
+    default:
+      $ref: "../responses/UnexpectedError.yaml"

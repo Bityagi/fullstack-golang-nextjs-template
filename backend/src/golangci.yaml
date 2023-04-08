@@ -1,0 +1,22 @@
+run:
+  timeout: 5m
+  modules-download-mode: mod
+
+linters:
+  enable:
+    - errcheck
+    - goimports
+    - revive
+    - govet
+    - staticcheck
+
+  goimports:
+    remove-unused: true
+    
+  misspell:
+    locale: US
+  
+  issues: 
+    exclude-use-default: false
+    max-issues-per-linter: 0
+    max-same-issues: 0
