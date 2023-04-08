@@ -1,46 +1,42 @@
-version: "3.8"
+version: '3.9'
 
 services:
-  postgres_db:
-    container_name: dev_pg_db
-    image: postgres:13-alpine
+  db:
+    image: postgres:13
     environment:
-      - POSTGRES_USER=${MASTER_DB_USER}
-      - POSTGRES_PASSWORD=${MASTER_DB_PASSWORD}
-      - POSTGRES_DB=${MASTER_DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: mydb
     volumes:
-      - dev_postgres_data:/var/lib/postgresql/data/
-    restart: always
+      - ./db:/docker-entrypoint-initdb.d/
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: 5s
+      timeout: 10s
+      retries: 5
 
   pgadmin:
-    container_name: pgadmin4_container
     image: dpage/pgadmin4
-    restart: always
+    environment:
+      PGADMIN_DEFAULT_EMAIL: admin@example.com
+      PGADMIN_DEFAULT_PASSWORD: password
     ports:
       - "5050:80"
-    environment:
-      - PGADMIN_DEFAULT_EMAIL=admin@admin.com
-      - PGADMIN_DEFAULT_PASSWORD=root
-    logging:
-      driver: none
+    networks:
+      - app-network
+
+  liquibase:
+    image: liquibase/liquibase:latest
     volumes:
-      - pgadmin_data:/var/lib/pgadmin
+      - ./db:/liquibase/changelog
+      - ./liquibase.properties:/liquibase/liquibase.properties
+    networks:
+      - app-network
 
-  # server:
-  #   container_name: dev_go_server
-  #   build:
-  #     context: .
-  #     dockerfile: Dockerfile-dev
-  #   ports:
-  #     - ${SERVER_PORT}:${SERVER_PORT}
-  #   depends_on:
-  #     - postgres_db
-  #   links:
-  #     - postgres_db:postgres_db
-  #   volumes:
-  #     - .:/app
-  #   restart: always
-
-volumes:
-  dev_postgres_data:
-  pgadmin_data:
+networks:
+  app-network:
+    driver: bridge
