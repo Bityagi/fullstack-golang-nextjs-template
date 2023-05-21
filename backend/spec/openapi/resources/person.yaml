@@ -4,6 +4,8 @@ get:
   description: Info for a specific person
   tags:
     - person
+  parameters:
+    - $ref: "../parameters/path/petId.yaml"
   responses:
     '200':
       description: Expected response to a valid request

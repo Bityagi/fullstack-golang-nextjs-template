@@ -1,53 +1,34 @@
 package main
 
 import (
-
+	"bityagi/controller"
+	"bityagi/handlers"
+	"bityagi/logger"
 	"log"
 	"net/http"
-	"bityagi/logger"
-	"bityagi/service"
-	"bityagi/handlers"
-
-	openapi "build/code/spec/src"
 )
 
 func main() {
-	// loadEnv()
-	// loadDatabase()
 	serveApplication()
-
 }
-
-// func loadEnv() {
-// 	err := godotenv.Load(".env.local")
-// 	if err != nil {
-// 		log.Fatal("Error loading .env file")
-// 	}
-// }
-
-// func loadDatabase() {
-// 	database.Connect()
-// 	database.Database.AutoMigrate(&model.User{})
-// 	database.Database.AutoMigrate(&model.Entry{})
-// }
 
 func serveApplication() {
 	logger.InitialzieLogger()
 
-	PersonApiService := service.NewMyPersonApiService()
+	//All controllers are initialized with their services at ./controller/controller.go
+	router, err := controller.SetupServicesAndControllers()
 
-	PersonApiController := openapi.NewPersonApiController(PersonApiService)
+	//Health check handler, this need to match in your deployment files, the cluster will fail if it can't get a health check
+	router.HandleFunc("/health", handlers.HealthCheckHandler)
 
-	router := openapi.NewRouter(PersonApiController)
-
+	//Serves all static resources found at ../backend/spec, serving swagger.html file at root
 	apiDocHandler := handlers.NewApiDocHandler()
 	router.Handle("/*", apiDocHandler)
 
-	err := http.ListenAndServe(":8080", router)
+	logger.Logger.Info("Starting Application in port 8080")
+
+	err = http.ListenAndServe(":8080", router)
 	if err != nil {
 		log.Fatal(err)
 	}
-	logger.Logger.Info("Starting Application in port 8080")
-
-
 }

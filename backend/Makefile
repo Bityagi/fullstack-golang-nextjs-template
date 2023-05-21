@@ -48,7 +48,7 @@ openApiGenerate:  ## Generate controllers and modelers using OpenAPI Spec
 		-o /local/$(GEN_CODE_DIR) \
 		--git-host $(GIT_HOST) --git-user-id $(GIT_USER) --git-repo-id $(GIT_REPO) \
 		--global-property=apiDocs=true,modelDocs=true,router=$(ROUTER) \
-		--additional-properties=router=$(ROUTER),packageVersion=$(VERSION),sourceFolder=src,onlyInterfaces=true,outputAsLibrary=false
+		--additional-properties=router=$(ROUTER),featureCORS=true,packageVersion=$(VERSION),sourceFolder=src,onlyInterfaces=true,outputAsLibrary=false
 
 ##@ Test Coverage
 coverage: ## Test Coverage
@@ -58,4 +58,4 @@ coverage: ## Test Coverage
 
 ##@ Git Best Practices
 install-git-hooks: ## Install Githooks
-	@echo "Installing Git hooks
+	@echo "Installing Git hooks"

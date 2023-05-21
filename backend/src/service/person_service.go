@@ -1,8 +1,8 @@
 package service
 
 import (
-	openapi "build/code/spec/src"
 	"bityagi/logger"
+	openapi "build/code/spec/src"
 	"context"
 	"go.uber.org/zap"
 	"net/http"
@@ -10,7 +10,7 @@ import (
 
 type MyPersonApiService struct{}
 
-func NewMyPersonApiService() openapi.PersonApiServicer {
+func NewMyPersonApiService() openapi.PersonAPIServicer {
 	return &MyPersonApiService{}
 }
 
@@ -23,6 +23,3 @@ func (s *MyPersonApiService) ShowPerson(ctx context.Context) (openapi.ImplRespon
 
 	return openapi.Response(http.StatusOK, person), nil
 }
-
-
-
