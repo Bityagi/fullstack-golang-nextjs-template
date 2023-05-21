@@ -48,6 +48,18 @@ go run main.go
 
 **Health Check:** http://localhost:8080/health
 
+## Docker Image
+Running the following command will build the docker image and run it locally.
+```shell
+docker build -t bityagi .
+```
+TODO: Need to fix the docker image's swagger UI and redocly UI. The image can't serve the static files they aren't copying over properly. 
+
+Running the following command will run the docker image locally.
+```shell
+docker run -p 8080:8080 bityagi
+```
+
 ## Writing OpenAPI Specs
 Write the specs in the file [backend/spec/openapi/openapi.yaml](./spec/openapi/openapi.yaml). The spec is written in the [OpenAPI 3.0](https://swagger.io/specification/) format and references multiple files in the [openapi](./spec/openapi) folder.
 
