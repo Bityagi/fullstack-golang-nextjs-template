@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  frontend:
+    build:
+      context: frontend
+      dockerfile: Dockerfile
+    ports:
+      - 3000:3000
+    environment:
+      - BACKEND_URL=http://backend:8080
+    networks:
+      - my-network
+
+  backend:
+    build:
+      context: backend
+      dockerfile: Dockerfile
+    ports:
+      - 8080:8080
+    networks:
+      - my-network
+
+networks:
+  my-network:
+    driver: bridge

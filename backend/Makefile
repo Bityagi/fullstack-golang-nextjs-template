@@ -1,7 +1,9 @@
 PROJECT_NAME                := platform-microservice-boilerplate
 OPENAPI_GENERATOR_VERSION   := 6.3.0
 SPEC                        := ./spec/openapi/openapi-v1.0.yaml
+SPEC_TEMPLATE               := ./spec/openapi/openapi.yaml
 SPECTRAL_RULES              := ./spec/openapi/.spectral.yaml
+GOLANG_CI     				:= /golangci.yaml
 ROUTER                      := chi
 VERSION                     := v1.0
 GEN_CODE_DIR                := build/generated
@@ -33,13 +35,17 @@ mock-data: ## Mock data using your spec
 lint-code: lint-src-code lint-build-code
 
 lint-src-code: ## Lint your code in the SRC Folder
-	docker run --rm -v $(PWD):/local -w /local golangci/golangci-lint:latest golangci-lint run --fix --config golangci.yaml ./src
+	docker run --rm -v $(PWD):/local \
+ 		-w /local golangci/golangci-lint:latest \
+ 		golangci-lint run --fix --config /local$(GOLANG_CI) /local/src
 
 lint-build-code: ## Lint the generated Code in the Build Folder
-	docker run --rm -v $(PWD):/local -w /local golangci/golangci-lint:latest golangci-lint run --fix --config golangci.yaml ./$(GEN_CODE_DIR)/src
+	docker run --rm -v $(PWD):/local \
+		-w /local golangci/golangci-lint:latest \
+		golangci-lint run --fix --config /local$(GOLANG_CI) ./local/$(GEN_CODE_DIR)/src
 
 ##@ Auto-Generate Code using Spec
-openApiGenerate:  ## Generate controllers and modelers using OpenAPI Spec
+openApiGenerate: bundle-spec ## Generate controllers and modelers using OpenAPI Spec
 	@echo "Generating controllers and models using spec " $(SPEC)
 	@echo "Generated code can be found at " $(GEN_CODE_DIR)
 	docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli generate \
@@ -49,6 +55,12 @@ openApiGenerate:  ## Generate controllers and modelers using OpenAPI Spec
 		--git-host $(GIT_HOST) --git-user-id $(GIT_USER) --git-repo-id $(GIT_REPO) \
 		--global-property=apiDocs=true,modelDocs=true,router=$(ROUTER) \
 		--additional-properties=router=$(ROUTER),featureCORS=true,packageVersion=$(VERSION),sourceFolder=src,onlyInterfaces=true,outputAsLibrary=false
+
+##@ Bundle Spec
+bundle-spec: ## Bundle your spec
+	@echo "Bundling the spec found at " $(SPEC)
+	docker run -v $(PWD):/project wework/speccy \
+		resolve $(SPEC_TEMPLATE) -o $(SPEC)
 
 ##@ Test Coverage
 coverage: ## Test Coverage

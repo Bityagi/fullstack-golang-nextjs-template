@@ -1,7 +1,7 @@
 package controller
 
 import (
-	"bityagi/service"
+	"bityagi/handlers"
 	openapi "build/code/spec/src"
 	"github.com/go-chi/chi/v5"
 )
@@ -9,15 +9,14 @@ import (
 func SetupServicesAndControllers() (chi.Router, error) {
 
 	// Create services
-	personApiService := service.NewMyPersonApiService()
-	newMyPetApiService := service.NewMyPetApiService()
+	newMyPetApiService := handlers.NewMyPetApiService()
 
 	// Set up API controllers
-	personApiController := openapi.NewPersonAPIController(personApiService)
 	petsApiController := openapi.NewPetsAPIController(newMyPetApiService)
 
-	// Set up router
-	router := openapi.NewRouter(personApiController, petsApiController)
+	// Set up router, if you have another controller you add it here
+	// Example - router := openapi.NewRouter(personApiController, petsApiController, newController)
+	router := openapi.NewRouter(petsApiController)
 
 	return router, nil
 }

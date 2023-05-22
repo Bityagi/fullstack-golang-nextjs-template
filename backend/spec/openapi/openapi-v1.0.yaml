@@ -6,11 +6,11 @@ info:
   license:
     name: MIT
   contact:
-    name: API Support
-    url: 'http://www.example.com/support'
+    name: API Support - Bityagi
+    url: http://www.example.com/support
     email: support@example.com
 servers:
-  - url: 'http://localhost:8080'
+  - url: http://localhost:8080
 tags:
   - name: pets
   - name: person
@@ -23,9 +23,9 @@ paths:
       tags:
         - pets
       parameters:
-        - $ref: '#/components/parameters/limit'
+        - $ref: "#/components/parameters/limit"
       responses:
-        '200':
+        "200":
           description: A paged array of pets
           headers:
             x-next:
@@ -35,9 +35,9 @@ paths:
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pet'
+                $ref: "#/components/schemas/Pet"
         default:
-          $ref: '#/components/responses/UnexpectedError'
+          $ref: "#/components/responses/UnexpectedError"
     post:
       summary: Create
       operationId: createPets
@@ -45,11 +45,11 @@ paths:
       tags:
         - pets
       responses:
-        '201':
-          $ref: '#/components/responses/NullResponse'
+        "201":
+          $ref: "#/components/responses/NullResponse"
         default:
-          $ref: '#/components/responses/UnexpectedError'
-  '/pets/{petId}':
+          $ref: "#/components/responses/UnexpectedError"
+  "/pets/{petId}":
     get:
       summary: Detail
       operationId: showPetById
@@ -57,16 +57,16 @@ paths:
       tags:
         - pets
       parameters:
-        - $ref: '#/components/parameters/petId'
+        - $ref: "#/components/parameters/petId"
       responses:
-        '200':
+        "200":
           description: Expected response to a valid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Pet'
+                $ref: "#/components/schemas/Pet"
         default:
-          $ref: '#/components/responses/UnexpectedError'
+          $ref: "#/components/responses/UnexpectedError"
   /person:
     get:
       summary: Detail
@@ -74,15 +74,17 @@ paths:
       description: Info for a specific person
       tags:
         - person
+      parameters:
+        - $ref: "#/components/parameters/petId"
       responses:
-        '200':
+        "200":
           description: Expected response to a valid request
           content:
             application/json:
               schema:
-                $ref: '#/components/schemas/Person'
+                $ref: "#/components/schemas/Person"
         default:
-          $ref: '#/components/responses/UnexpectedError'
+          $ref: "#/components/responses/UnexpectedError"
 components:
   parameters:
     petId:
@@ -91,7 +93,8 @@ components:
       required: true
       description: The id of the pet to retrieve
       schema:
-        type: string
+        type: integer
+        format: int64
     limit:
       name: limit
       in: query
@@ -145,6 +148,6 @@ components:
       content:
         application/json:
           schema:
-            $ref: '#/components/schemas/Error'
+            $ref: "#/components/schemas/Error"
     NullResponse:
       description: Null response

@@ -1,4 +1,4 @@
 backend/build
+.idea
 
-/backend/src/main
-/backend/src/bityagi
+frontend/node_modules
