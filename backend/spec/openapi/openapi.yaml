@@ -19,7 +19,7 @@ paths:
     $ref: "./resources/pets.yaml"
   /pets/{petId}:
     $ref: "./resources/pet.yaml"
-  /person:
+  /person/{petId}:
     $ref: "./resources/person.yaml"
 
 components:

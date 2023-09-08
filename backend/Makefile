@@ -9,6 +9,7 @@ VERSION                     := v1.0
 GEN_CODE_DIR                := build/generated
 BINARY_DIR                  := ./build/bin
 REPORT_DIR                  := ./build/reports
+BUILD_DIR                   := ./build
 GIT_HOST                    := build
 GIT_USER                    := code
 GIT_REPO                    := spec
@@ -21,7 +22,7 @@ help:
 
 .PHONY: server
 server: ## Run the Application
-	go run ./src/main.go
+	cd src && go run main.go
 
 ##@ Open API Spec Commands
 lint-spec: ## Lint your spec
@@ -35,17 +36,20 @@ mock-data: ## Mock data using your spec
 lint-code: lint-src-code lint-build-code
 
 lint-src-code: ## Lint your code in the SRC Folder
-	docker run --rm -v $(PWD):/local \
- 		-w /local golangci/golangci-lint:latest \
- 		golangci-lint run --fix --config /local$(GOLANG_CI) /local/src
-
-lint-build-code: ## Lint the generated Code in the Build Folder
+	@echo "Linting code in directory: /src"
 	docker run --rm -v $(PWD):/local \
 		-w /local golangci/golangci-lint:latest \
-		golangci-lint run --fix --config /local$(GOLANG_CI) ./local/$(GEN_CODE_DIR)/src
+		golangci-lint run --fix --config /local/$(GOLANG_CI) /local/src
+
+lint-build-code: ## Lint the generated Code in the Build Folder
+	@echo "Linting code in directory: $(GEN_CODE_DIR)/src"
+	docker run --rm -v $(PWD):/local \
+		-w /local golangci/golangci-lint:latest \
+		golangci-lint run --fix --config /local/$(GOLANG_CI) /local/$(GEN_CODE_DIR)/src
+
 
 ##@ Auto-Generate Code using Spec
-openApiGenerate: bundle-spec ## Generate controllers and modelers using OpenAPI Spec
+generate-code: bundle-spec ## Generate controllers and modelers using OpenAPI Spec
 	@echo "Generating controllers and models using spec " $(SPEC)
 	@echo "Generated code can be found at " $(GEN_CODE_DIR)
 	docker run --rm -v ${PWD}:/local openapitools/openapi-generator-cli generate \
@@ -55,6 +59,16 @@ openApiGenerate: bundle-spec ## Generate controllers and modelers using OpenAPI 
 		--git-host $(GIT_HOST) --git-user-id $(GIT_USER) --git-repo-id $(GIT_REPO) \
 		--global-property=apiDocs=true,modelDocs=true,router=$(ROUTER) \
 		--additional-properties=router=$(ROUTER),featureCORS=true,packageVersion=$(VERSION),sourceFolder=src,onlyInterfaces=true,outputAsLibrary=false
+
+##@ Remove Unused Imports
+remove-unused-imports: ## Remove unused imports
+	@echo "Removing unused imports"
+	docker run --rm -v ${PWD}:/app -w /app golang:latest goimports -w -local github.com/$(GIT_HOST)/$(GIT_USER)/$(GIT_REPO) ./src
+
+##@ Clean Build
+clean: ## Clean Build
+	@echo "Cleaning build"
+	rm -rf $(BUILD_DIR)
 
 ##@ Bundle Spec
 bundle-spec: ## Bundle your spec

@@ -26,7 +26,7 @@ Once the APIs are defined, the developer can then generate the controller and mo
 
 ## Build Controller & Models
 ```shell
-make openApiGenerate
+make generateCode
 ```
 
 ## Build the Project

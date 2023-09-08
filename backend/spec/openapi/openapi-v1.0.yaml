@@ -67,7 +67,7 @@ paths:
                 $ref: "#/components/schemas/Pet"
         default:
           $ref: "#/components/responses/UnexpectedError"
-  /person:
+  "/person/{petId}":
     get:
       summary: Detail
       operationId: showPerson
